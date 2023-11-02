@@ -30,9 +30,11 @@ public class VideoPresenter : VideoPresenterBase
                 return;
 
             UpdateContextRects();
-            using var lockedBitmap = AcquireBitmapBuffer();
-            WriteBitmapBuffer(lockedBitmap.Address, lockedBitmap.Size.Width, lockedBitmap.Size.Height, lockedBitmap.RowBytes);
-            context.DrawImage(BufferBitmap!, ContextSourceRect, ContextTargetRect);
+            using (var lockedBitmap = AcquireBitmapBuffer())
+                WriteBitmapBuffer(lockedBitmap.Address, lockedBitmap.Size.Width, lockedBitmap.Size.Height, lockedBitmap.RowBytes);
+
+            if (BufferBitmap is not null)
+                context.DrawImage(BufferBitmap, ContextSourceRect, ContextTargetRect);
         }
         finally
         {
