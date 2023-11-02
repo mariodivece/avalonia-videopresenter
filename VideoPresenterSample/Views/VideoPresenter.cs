@@ -7,12 +7,14 @@ using Avalonia.Threading;
 using SkiaSharp;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace VideoPresenterSample.Views;
 
 public class VideoPresenter : VideoPresenterBase
 {
     private WriteableBitmap? BufferBitmap;
+    private readonly BusyLocker Locker = new();
 
     protected override void OnDetachedFromLogicalTree(LogicalTreeAttachmentEventArgs e)
     {
@@ -32,14 +34,27 @@ public class VideoPresenter : VideoPresenterBase
             if (Bounds.Width <= 0 || Bounds.Height <= 0)
                 return;
 
-            using (var bmp = AcquireBitmapBuffer())
-                WriteBitmapBuffer(bmp.Address, bmp.Size.Width, bmp.Size.Height, bmp.RowBytes);
+            Task.Run(() =>
+            {
+                if (!Locker.TryAcquire(out var releaser))
+                    return;
+
+                using (var bmp = AcquireBitmapBuffer())
+                    WriteBitmapBuffer(bmp.Address, bmp.Size.Width, bmp.Size.Height, bmp.RowBytes);
+
+                releaser.Dispose();
+            });
+
 
             if (BufferBitmap is null)
                 return;
 
+            if (!Locker.TryAcquire(out var releaser))
+                return;
+
             UpdateContextRects();
             context.DrawImage(BufferBitmap, ContextSourceRect, ContextTargetRect);
+            releaser.Dispose();
         }
         finally
         {
@@ -65,5 +80,37 @@ public class VideoPresenter : VideoPresenterBase
 
         s.Clear();
         return lockedBuffer;
+    }
+
+    private sealed class BusyLocker
+    {
+        private long m_IsBusy = 0;
+
+        public bool TryAcquire(out IDisposable releaser)
+        {
+            var acquired = Interlocked.Increment(ref m_IsBusy) <= 1;
+            releaser = new Releaser(this, acquired);
+            return acquired;
+        }
+
+        private void Release() => Interlocked.Exchange(ref m_IsBusy, 0);
+
+        private sealed class Releaser : IDisposable
+        {
+            private readonly bool Acquired;
+            private readonly BusyLocker Locker;
+
+            public Releaser(BusyLocker locker, bool acquired)
+            {
+                Acquired = acquired;
+                Locker = locker;
+            }
+
+            public void Dispose()
+            {
+                if (Acquired)
+                    Locker.Release();
+            }
+        }
     }
 }

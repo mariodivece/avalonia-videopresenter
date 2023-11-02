@@ -54,12 +54,9 @@
 			RenderInterpolationMode="None"
 			Stretch="Uniform"
 			StretchDirection="Both"
-			PicturePixelWidth="1920"
-			PicturePixelHeight="1080"
+			PicturePixelWidth="1280"
+			PicturePixelHeight="720"
 			SpeedFactor="{Binding Path=SpeedFactor}">
-			<views:VideoPresenter.RenderTransform>
-				<RotateTransform Angle="0"></RotateTransform>
-			</views:VideoPresenter.RenderTransform>
 		</views:VideoPresenter>
 		<Rectangle Classes="red" Grid.Row="2" Margin="0,0,0,0" Width="10" VerticalAlignment="Top" HorizontalAlignment="Left">
 		</Rectangle>

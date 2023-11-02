@@ -8,6 +8,7 @@ using Avalonia.Skia;
 using Avalonia.Threading;
 using SkiaSharp;
 using System;
+using System.Threading.Tasks;
 
 namespace VideoPresenterSample.Views;
 
@@ -36,6 +37,7 @@ internal class VideoPresenterRaw : VideoPresenterBase, ICustomDrawOperation
 
             UpdateContextRects();
             context.Custom(this);
+
         }
         finally
         {
@@ -68,8 +70,9 @@ internal class VideoPresenterRaw : VideoPresenterBase, ICustomDrawOperation
                 NormalSource = new(PicturePixelSize, PictureDpi, PicturePixelFormat, PictureAlphaFormat);
             }
 
-            using var source = NormalSource.Lock();
-            WriteBitmapBuffer(source.Address, source.Size.Width, source.Size.Height, source.RowBytes);
+            using (var source = NormalSource.Lock())
+                WriteBitmapBuffer(source.Address, source.Size.Width, source.Size.Height, source.RowBytes);
+
             context.DrawBitmap(NormalSource, ContextSourceRect, ContextTargetRect);
         }
     }
