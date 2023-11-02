@@ -34,27 +34,14 @@ public class VideoPresenter : VideoPresenterBase
             if (Bounds.Width <= 0 || Bounds.Height <= 0)
                 return;
 
-            Task.Run(() =>
-            {
-                if (!Locker.TryAcquire(out var releaser))
-                    return;
-
-                using (var bmp = AcquireBitmapBuffer())
-                    WriteBitmapBuffer(bmp.Address, bmp.Size.Width, bmp.Size.Height, bmp.RowBytes);
-
-                releaser.Dispose();
-            });
-
+            using (var bmp = AcquireBitmapBuffer())
+                WriteBitmapBuffer(bmp.Address, bmp.Size.Width, bmp.Size.Height, bmp.RowBytes);
 
             if (BufferBitmap is null)
                 return;
 
-            if (!Locker.TryAcquire(out var releaser))
-                return;
-
             UpdateContextRects();
             context.DrawImage(BufferBitmap, ContextSourceRect, ContextTargetRect);
-            releaser.Dispose();
         }
         finally
         {
@@ -86,16 +73,15 @@ public class VideoPresenter : VideoPresenterBase
     {
         private long m_IsBusy = 0;
 
-        public bool TryAcquire(out IDisposable releaser)
+        public IDisposable TryEnter(out bool entered)
         {
-            var acquired = Interlocked.Increment(ref m_IsBusy) <= 1;
-            releaser = new Releaser(this, acquired);
-            return acquired;
+            entered = Interlocked.Increment(ref m_IsBusy) <= 1;
+            return new Releaser(this, entered);
         }
 
         private void Release() => Interlocked.Exchange(ref m_IsBusy, 0);
 
-        private sealed class Releaser : IDisposable
+        private readonly struct Releaser : IDisposable
         {
             private readonly bool Acquired;
             private readonly BusyLocker Locker;
