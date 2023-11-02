@@ -1,9 +1,9 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using AvaloniaApplication1.ViewModels;
+using VideoPresenterSample.ViewModels;
 
-namespace AvaloniaApplication1.Views
+namespace VideoPresenterSample.Views
 {
     public partial class MainWindow : Window
     {

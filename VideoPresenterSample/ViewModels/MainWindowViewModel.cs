@@ -2,7 +2,7 @@
 using ReactiveUI;
 using System.Reactive;
 
-namespace AvaloniaApplication1.ViewModels;
+namespace VideoPresenterSample.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {

@@ -1,9 +1,9 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-using AvaloniaApplication1.ViewModels;
+using VideoPresenterSample.ViewModels;
 using System;
 
-namespace AvaloniaApplication1
+namespace VideoPresenterSample
 {
     public class ViewLocator : IDataTemplate
     {

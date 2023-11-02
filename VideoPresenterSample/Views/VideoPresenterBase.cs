@@ -10,7 +10,7 @@ using SkiaSharp;
 using System;
 using System.Diagnostics;
 
-namespace AvaloniaApplication1.Views
+namespace VideoPresenterSample.Views
 {
     public abstract class VideoPresenterBase : Control
     {

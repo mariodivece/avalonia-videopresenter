@@ -1,10 +1,10 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using AvaloniaApplication1.ViewModels;
-using AvaloniaApplication1.Views;
+using VideoPresenterSample.ViewModels;
+using VideoPresenterSample.Views;
 
-namespace AvaloniaApplication1;
+namespace VideoPresenterSample;
 
 public partial class App : Application
 {

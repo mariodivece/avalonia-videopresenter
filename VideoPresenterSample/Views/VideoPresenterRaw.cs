@@ -9,7 +9,7 @@ using Avalonia.Threading;
 using SkiaSharp;
 using System;
 
-namespace AvaloniaApplication1.Views;
+namespace VideoPresenterSample.Views;
 
 internal class VideoPresenterRaw : VideoPresenterBase, ICustomDrawOperation
 {

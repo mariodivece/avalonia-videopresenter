@@ -5,7 +5,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using System;
 
-namespace AvaloniaApplication1.Views;
+namespace VideoPresenterSample.Views;
 
 public class VideoPresenter : VideoPresenterBase
 {

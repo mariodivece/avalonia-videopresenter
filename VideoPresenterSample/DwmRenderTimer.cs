@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Threading;
 
-namespace AvaloniaApplication1;
+namespace VideoPresenterSample;
 
-internal sealed class DwmRenderTimer : IDisposable
+internal sealed partial class DwmRenderTimer : IDisposable
 {
     public event EventHandler<RenderTimerEventArgs>? Tick;
     private readonly Thread _renderTick;
@@ -35,11 +36,11 @@ internal sealed class DwmRenderTimer : IDisposable
         _renderTick.Start();
     }
 
-    [DllImport("Dwmapi.dll")]
-    private static extern int DwmFlush();
+    [LibraryImport("Dwmapi.dll")]
+    private static partial int DwmFlush();
 
-    [DllImport("Dwmapi.dll")]
-    private static extern int DwmIsCompositionEnabled(out bool enabled);
+    [LibraryImport("Dwmapi.dll")]
+    private static partial int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] out bool enabled);
 
     public void Dispose()
     {
