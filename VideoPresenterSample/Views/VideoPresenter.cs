@@ -1,9 +1,12 @@
-﻿using Avalonia.LogicalTree;
+﻿using Avalonia;
+using Avalonia.LogicalTree;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using SkiaSharp;
 using System;
+using System.Threading;
 
 namespace VideoPresenterSample.Views;
 
@@ -29,19 +32,22 @@ public class VideoPresenter : VideoPresenterBase
             if (Bounds.Width <= 0 || Bounds.Height <= 0)
                 return;
 
-            UpdateContextRects();
-            using (var lockedBitmap = AcquireBitmapBuffer())
-                WriteBitmapBuffer(lockedBitmap.Address, lockedBitmap.Size.Width, lockedBitmap.Size.Height, lockedBitmap.RowBytes);
+            using (var bmp = AcquireBitmapBuffer())
+                WriteBitmapBuffer(bmp.Address, bmp.Size.Width, bmp.Size.Height, bmp.RowBytes);
 
-            if (BufferBitmap is not null)
-                context.DrawImage(BufferBitmap, ContextSourceRect, ContextTargetRect);
+            if (BufferBitmap is null)
+                return;
+
+            UpdateContextRects();
+            context.DrawImage(BufferBitmap, ContextSourceRect, ContextTargetRect);
         }
         finally
         {
-            // always force an update
-            Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background);
+            QueueRender();
         }
     }
+
+    private void QueueRender() => Dispatcher.UIThread.InvokeAsync(InvalidateVisual, DispatcherPriority.Background);
 
     public unsafe ILockedFramebuffer AcquireBitmapBuffer()
     {
@@ -51,7 +57,7 @@ public class VideoPresenter : VideoPresenterBase
 
         BufferBitmap?.Dispose();
         BufferBitmap = new WriteableBitmap(
-            PicturePixelSize, PictureDpi, PicturePixelFormat, AlphaFormat.Unpremul);
+            PicturePixelSize, PictureDpi, PicturePixelFormat, PictureAlphaFormat);
 
         var lockedBuffer = BufferBitmap.Lock();
         var s = new Span<byte>(lockedBuffer.Address.ToPointer(),

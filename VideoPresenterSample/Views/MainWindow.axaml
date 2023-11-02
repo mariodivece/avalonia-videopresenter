@@ -17,7 +17,7 @@
     </Design.DataContext>
 
 	<Window.Styles>
-		<Style Selector="Rectangle.red">
+		<Style Selector="Rectangle.notset">
 			<Setter Property="Height" Value="100"/>
 			<Setter Property="Width" Value="100"/>
 			<Setter Property="Fill" Value="Red"/>

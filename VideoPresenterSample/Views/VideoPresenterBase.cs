@@ -121,6 +121,8 @@ namespace VideoPresenterSample.Views
 
         protected PixelFormat PicturePixelFormat { get; } = PixelFormats.Bgra8888;
 
+        protected AlphaFormat PictureAlphaFormat { get; } = AlphaFormat.Unpremul;
+
         protected Rect ContextBoundsRect { get; private set; }
 
         protected Rect ContextSourceRect { get; private set; }

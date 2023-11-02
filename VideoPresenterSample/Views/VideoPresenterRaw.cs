@@ -53,7 +53,8 @@ internal class VideoPresenterRaw : VideoPresenterBase, ICustomDrawOperation
             if (SkiaSource is null || SkiaSource.Width != PicturePixelSize.Width || SkiaSource.Height != PicturePixelSize.Height)
             {
                 SkiaSource?.Dispose();
-                SkiaSource = new(PicturePixelSize.Width, PicturePixelSize.Height, PicturePixelFormat.ToSkColorType(), SKAlphaType.Unpremul);
+                SkiaSource = new(PicturePixelSize.Width, PicturePixelSize.Height,
+                    PicturePixelFormat.ToSkColorType(), PictureAlphaFormat.ToSkAlphaType());
             }
 
             WriteBitmapBuffer(SkiaSource.GetPixels(), PicturePixelSize.Width, PicturePixelSize.Height, SkiaSource.RowBytes);
@@ -64,7 +65,7 @@ internal class VideoPresenterRaw : VideoPresenterBase, ICustomDrawOperation
             if (NormalSource is null || NormalSource.PixelSize != PicturePixelSize)
             {
                 NormalSource?.Dispose();
-                NormalSource = new(PicturePixelSize, PictureDpi, PicturePixelFormat, AlphaFormat.Unpremul);
+                NormalSource = new(PicturePixelSize, PictureDpi, PicturePixelFormat, PictureAlphaFormat);
             }
 
             using var source = NormalSource.Lock();
